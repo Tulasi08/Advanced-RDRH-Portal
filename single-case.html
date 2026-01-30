@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal X - Advanced Clinical Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; overflow: hidden; }
+        .sidebar-item { transition: 0.2s; cursor: pointer; border-radius: 12px; color: #475569; font-weight: 600; margin-bottom: 4px; }
+        .sidebar-active { background-color: #f3f0ff; color: #5B4D9D; }
+        .sidebar-active i { color: #5B4D9D !important; }
+        .logo-circle { width: 42px; height: 42px; border-radius: 50%; border: 2px solid #7c3aed; display: flex; align-items: center; justify-content: center; }
+        .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; position: relative; }
+        .tab-btn { padding: 12px 16px; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; cursor: pointer; }
+        .active-tab { color: #5B4D9D; border-bottom: 2px solid #5B4D9D; }
+        
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        /* Sub-view visibility */
+        .single-sub-view { display: none; }
+        .single-sub-view.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <aside class="w-64 bg-white border-r border-gray-100 p-6 flex flex-col flex-shrink-0">
+        <div class="flex items-center gap-3 mb-12 px-2">
+            <div class="logo-circle">
+                <i class="fas fa-dna text-[#7c3aed] text-xl"></i>
+            </div>
+            <span class="text-3xl font-extrabold text-[#334155] tracking-tight">Portal X</span>
+        </div>
+
+        <nav class="flex-1">
+            <div class="sidebar-item p-4 flex items-center gap-4">
+                <i class="fas fa-th-large text-lg"></i> 
+                <span>Dashboard</span>
+            </div>
+            
+            <div class="sidebar-item sidebar-active p-4 flex items-center gap-4">
+                <i class="fas fa-chart-pie text-lg"></i> 
+                <span>Insights & Analytics</span>
+            </div>
+            
+            <div class="sidebar-item p-4 flex items-center gap-4">
+                <i class="fas fa-file-alt text-lg"></i> 
+                <span>Reports</span>
+            </div>
+            
+            <div class="sidebar-item p-4 flex items-center gap-4">
+                <i class="fas fa-user-md text-lg"></i> 
+                <span>Team</span>
+            </div>
+            
+            <div class="sidebar-item p-4 flex items-center gap-4">
+                <i class="fas fa-clipboard-check text-lg"></i> 
+                <span>Enquiry</span>
+            </div>
+
+            <div class="sidebar-item p-4 flex items-center gap-4">
+                <i class="fas fa-shield-alt text-lg"></i> 
+                <span>Authentication</span>
+            </div>
+        </nav>
+
+        <div class="mt-auto pt-10 px-4">
+            <p class="text-[11px] text-gray-400 leading-relaxed">
+                © 2026 by Company<br>All rights reserved.
+            </p>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0">
+        <header class="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-8 flex-shrink-0">
+            <div class="relative w-1/3">
+                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
+                <input type="text" placeholder="Search..." class="w-full bg-gray-50 border border-gray-200 rounded-full py-1.5 pl-10 pr-4 text-sm outline-none">
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right leading-none"><p class="text-sm font-bold">Dr. X</p><p class="text-[10px] text-gray-400 font-bold uppercase">Admin</p></div>
+                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600"><i class="fas fa-user text-xs"></i></div>
+            </div>
+        </header>
+
+        <div class="px-8 pt-6 bg-[#f8f9fa] border-b border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-800 mb-4">Data Visualization & Insights</h1>
+            <div class="flex bg-white rounded-t-lg">
+                <button onclick="switchTab('view-cohort', this)" class="tab-btn">Cohort Analytics</button>
+                <button onclick="switchTab('view-patient', this)" class="tab-btn">Patient Level Data</button>
+                <button onclick="switchTab('view-compare', this)" class="tab-btn">Comparative Analysis</button>
+                <button onclick="switchTab('view-single', this)" class="tab-btn active-tab">Single Case View</button>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-8 pb-10 pt-6">
+            <div id="view-cohort" class="view-section text-center py-20">Cohort Analytics Content</div>
+            <div id="view-patient" class="view-section text-center py-20">Patient Table Content</div>
+            <div id="view-compare" class="view-section text-center py-20">Comparative Content</div>
+
+            <div id="view-single" class="view-section active">
+                <div class="card p-6 mb-6 flex items-center justify-between border-l-8 border-purple-700 shadow-sm">
+                    <div class="flex items-center gap-6">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl font-bold">TS</div>
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-800">Tom S.</h2>
+                            <div class="text-sm text-gray-500">Case ID: <span class="font-mono text-gray-800">C-2026-001</span> • NSCLC</div>
+                            <div class="flex gap-2 mt-2">
+                                <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">Sample: Lung Tissue</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-red-500">1 High Impact</div>
+                        <div class="text-sm text-gray-500 uppercase font-bold text-[10px]">Mutation Detected</div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 border-b border-gray-200 mb-6">
+                    <button onclick="switchSubTab('sub-overview', this)" class="sub-tab-btn pb-2 border-b-2 border-purple-700 text-purple-700 font-bold px-4">Overview</button>
+                    <button onclick="switchSubTab('sub-clinical', this)" class="sub-tab-btn pb-2 border-b-2 border-transparent text-gray-500 px-4">Clinical Data</button>
+                </div>
+
+                <div id="sub-overview" class="single-sub-view active">
+                    <div class="grid grid-cols-3 gap-6">
+                        <div class="col-span-2 space-y-6">
+                            <div class="card border-l-4 border-red-500 shadow-sm p-6">
+                                <div class="flex justify-between">
+                                    <h3 class="text-lg font-bold text-gray-800">EGFR <span class="font-normal text-gray-500">Exon 19</span></h3>
+                                </div>
+                                <div class="mt-4 grid grid-cols-4 gap-4 text-sm">
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <div class="text-gray-400 text-[10px] uppercase font-bold">DNA Change</div>
+                                        <div class="font-mono text-gray-700">c.2369C>T</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <div class="text-gray-400 text-[10px] uppercase font-bold">Protein Change</div>
+                                        <div class="font-mono text-gray-700">p.T790M</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <div class="text-gray-400 text-[10px] uppercase font-bold">VAF %</div>
+                                        <div class="font-bold text-gray-700">45.2%</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <div class="text-gray-400 text-[10px] uppercase font-bold">Impact</div>
+                                        <div class="font-bold text-gray-700">High</div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 grid grid-cols-4 gap-4 text-sm">
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <div class="text-gray-400 text-[10px] uppercase font-bold">DNA Change</div>
+                                        <div class="font-mono text-gray-700">c.2573T>G</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <div class="text-gray-400 text-[10px] uppercase font-bold">Protein Change</div>
+                                        <div class="font-mono text-gray-700">p.L858R</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <div class="text-gray-400 text-[10px] uppercase font-bold">VAF %</div>
+                                        <div class="font-bold text-gray-700">25.3%</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        <div class="text-gray-400 text-[10px] uppercase font-bold">Impact</div>
+                                        <div class="font-bold text-gray-700">Medium</div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-gray-100 text-sm text-gray-600 italic">
+                                    <strong>Clinical Significance:</strong> Associated with high sensitivity to EGFR-TKIs.
+                                </div>
+                            </div>
+
+                            <div class="card p-6 bg-indigo-50 border-none shadow-sm">
+                                <div class="flex gap-4">
+                                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 shrink-0">
+                                        <i class="fas fa-microscope"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-indigo-900 text-sm">Report</h4>
+                                        <p class="text-sm text-indigo-800 mt-1 leading-relaxed">
+                                            The p.L858R substitution results in a constitutive activation of the kinase domain. Literature confirms this variant stabilizes the active conformation of the EGFR protein, predicting a positive response to first-generation (Erlotinib) and third-generation (Osimertinib) inhibitors.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-span-1 space-y-6">
+                            <div class="card shadow-sm p-6 border-t-4 border-blue-500">
+                                <h4 class="font-bold text-gray-700 mb-4 text-[10px] uppercase tracking-wider">Clinical Manifestation</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase">Disease Stage</span>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">STAGE IV</span>
+                                            <span class="text-xs text-gray-600 font-mono">T2a N2 M1b</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase">Therapy</span>
+                                        <p class="text-xs text-gray-600 mt-1 leading-normal">
+                                            Erlotinib
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase">Symptoms & History</span>
+                                        <p class="text-xs text-gray-600 mt-1 leading-normal">
+                                            Patient presents with persistent dry cough, pleuritic chest pain, and 15lb weight loss over 3 months. No history of smoking.
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase">Imaging Findings</span>
+                                        <p class="text-xs text-gray-600 mt-1 italic">
+                                            PET-CT shows 3.2cm mass in right upper lobe with mediastinal lymphadenopathy.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card shadow-sm p-6">
+                                <h4 class="font-bold text-gray-700 mb-3 text-[10px] uppercase tracking-tighter">Sample Metrics</h4>
+                                <div class="space-y-4">
+                                    <div class="flex justify-between text-xs"><span class="text-gray-500">Total Reads</span> <span class="font-mono font-bold">12.5M</span></div>
+                                    <div class="flex justify-between text-xs"><span class="text-gray-500">Coverage</span> <span class="font-mono font-bold">100x</span></div>
+                                    <div class="flex justify-between text-xs"><span class="text-gray-500">Tumor Purity</span> <span class="font-mono font-bold">70%</span></div>
+                                    <div class="h-1 bg-gray-100 rounded-full overflow-hidden mt-2">
+                                        <div class="w-[70%] h-full bg-green-500"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sub-clinical" class="single-sub-view">
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse dense-table border border-gray-100">
+                            <tbody class="text-gray-600 divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100 w-40">Case ID</th>
+                                    <td class="p-3 font-mono text-xs font-bold text-purple-700">C-2026-001</td>
+                                    <td class="p-3 font-mono text-xs font-bold text-purple-700">C-2026-001</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Patient</th>
+                                    <td class="p-3">Tom S.</td>
+                                    <td class="p-3">Tom S.</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Age/Sex</th>
+                                    <td class="p-3">45 / M</td>
+                                    <td class="p-3">45 / M</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Location</th>
+                                    <td class="p-3">Bengaluru</td>
+                                    <td class="p-3">Bengaluru</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Report</th>
+                                    <td class="p-3">Somatic</td>
+                                    <td class="p-3">Somatic</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Cancer Type</th>
+                                    <td class="p-3">NSCLC</td>
+                                    <td class="p-3">NSCLC</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Therapy</th>
+                                    <td class="p-3">Erlotinib</td>
+                                    <td class="p-3">Erlotinib</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Gene</th>
+                                    <td class="p-3 font-bold">EGFR</td>
+                                    <td class="p-3 font-bold">EGFR</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Transcript ID</th>
+                                    <td class="p-3">NM_005228.5</td>
+                                    <td class="p-3">NM_005228.4</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">HGVS g</th>
+                                    <td class="p-3">g.55242470C>T</td>
+                                    <td class="p-3">g.55259515T>G</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">HGVS c</th>
+                                    <td class="p-3">c.2369C>T</td>
+                                    <td class="p-3">c.2573T>G</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">HGVS p</th>
+                                    <td class="p-3">p.T790M</td>
+                                    <td class="p-3">p.L858R</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Impact</th>
+                                    <td class="p-3"><span class="bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">High</span></td>
+                                    <td class="p-3"><span class="bg-red-100 text-red-800 text-xs px-2 py-0.5 rounded-full">High</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">AMP Classification</th>
+                                    <td class="p-3">Tier I</td>
+                                    <td class="p-3">Tier I</td>
+                                </tr>
+                                 <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">Total Reads</th>
+                                    <td class="p-3">12,450</td>
+                                    <td class="p-3">6,670</td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <th class="bg-purple-50 text-purple-900 font-bold p-3 border-r border-purple-100">SR%</th>
+                                    <td class="p-3">45.2%</td>
+                                    <td class="p-3">25.3%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div> 
+        </div>
+    </div>
+
+    <script>
+        function switchTab(targetId, btn) {
+            document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active-tab'));
+            document.getElementById(targetId).classList.add('active');
+            btn.classList.add('active-tab');
+        }
+
+        function switchSubTab(subId, btn) {
+            document.querySelectorAll('.single-sub-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.sub-tab-btn').forEach(b => {
+                b.classList.replace('border-purple-700', 'border-transparent');
+                b.classList.replace('text-purple-700', 'text-gray-500');
+                b.classList.remove('font-bold');
+            });
+            document.getElementById(subId).classList.add('active');
+            btn.classList.replace('border-transparent', 'border-purple-700');
+            btn.classList.replace('text-gray-500', 'text-purple-700');
+            btn.classList.add('font-bold');
+        }
+    </script>
+</body>
+</html>
